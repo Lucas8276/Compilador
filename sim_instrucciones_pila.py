@@ -54,6 +54,27 @@ class StackMachineSimulator:
                     self.stack.append(self.vars.get(parts[1], 0.0))
                 case "STORE":
                     self.vars[parts[1]] = self.stack.pop()
+                
+                case "GUITA":
+                    # Si partes viene como ['GUITA', '"ingresa el numero 0:"']
+                    if len(parts) == 2:
+                        mensaje = parts[1]
+                        # Elimina comillas, si están
+                        if mensaje.startswith('"') and mensaje.endswith('"'):
+                            mensaje = mensaje[1:-1]
+                        val = input(mensaje + " ")
+                    else:
+                        val = input("Ingrese un valor: ")
+                    # Conversión automática:
+                    try:
+                        val = int(val)
+                    except ValueError:
+                        try:
+                            val = float(val)
+                        except ValueError:
+                            pass
+                    self.stack.append(val)
+
 
                 # --- aritmética ---
                 case "ADD": self._binop(lambda a, b: a + b)
@@ -99,7 +120,10 @@ class StackMachineSimulator:
                     if len(parts) == 2:               # PRINT "texto"
                         print(parts[1].strip('"'))
                     else:                             # PRINT (valor pila)
-                        print(self.stack.pop())
+                        if self.stack:
+                            print(self.stack.pop())
+                        else:
+                            print("[WARN] PRINT intentó hacer pop en pila vacía")
 
                 # --- desconocido ---
                 case _:

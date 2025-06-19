@@ -8,6 +8,7 @@ class StackMachineCodeGenerator:
         
     def generate(self):
         assign_re = re.compile(r'(\w+)\s*=\s*(.+)')
+        if_goto_op_re = re.compile(r'if\s+(\w+)\s*([<>=!]+)\s*(\w+)\s+goto\s+(\w+)')
         if_goto_re = re.compile(r'if\s+(\w+)\s+goto\s+(\w+)')
         goto_re = re.compile(r'goto\s+(\w+)')
         label_re = re.compile(r'(\w+):')
@@ -15,6 +16,15 @@ class StackMachineCodeGenerator:
 
         for line in self.ir_code:
             line = line.strip()
+            
+            # t0 = GUITA "mensaje"
+            m_guita = re.match(r'(\w+)\s*=\s*GUITA\s+"([^"]*)"', line)
+            if m_guita:
+                var, mensaje = m_guita.group(1), m_guita.group(2)
+                self.output.append(f'GUITA "{mensaje}"')
+                self.output.append(f'STORE {var}')
+                continue
+
             # Asignación simple o con operación: t0 = cont > 3
             m = assign_re.match(line)
             if m:
@@ -32,6 +42,16 @@ class StackMachineCodeGenerator:
                     # asignación simple: var = valor o var = var
                     self.emit_load_operand(expr)
                     self.output.append(f"STORE {var}")
+                continue
+
+            # if t0 >= 5 goto L1
+            m = if_goto_op_re.match(line)
+            if m:
+                left, op, right, label = m.groups()
+                self.emit_load_operand(left)
+                self.emit_load_operand(right)
+                self.emit_op(op)
+                self.output.append(f"JNZ {label}")
                 continue
 
             # if t0 goto L1
@@ -63,8 +83,9 @@ class StackMachineCodeGenerator:
                 rest = m.group(2)
                 if text:
                     self.output.append(f'PRINT "{text}"')
-                if rest:
-                    vars_to_print = [v.strip() for v in rest.split(",")]
+                # Si hay variables para imprimir después del texto
+                if rest and rest.strip():
+                    vars_to_print = [v.strip() for v in rest.split(",") if v.strip()]
                     for v in vars_to_print:
                         self.emit_load_operand(v)
                         self.output.append("PRINT")
@@ -83,7 +104,6 @@ class StackMachineCodeGenerator:
                 self.emit_load_operand(val)
                 self.output.append("RETURN")
                 continue
-
 
             # Por defecto, agregar la línea sin cambios (o ignorar)
             # self.output.append(f"# {line}")
@@ -116,6 +136,8 @@ class StackMachineCodeGenerator:
             self.output.append(ops_map[op])
         else:
             self.output.append(f"# Op no reconocido: {op}")
+
+# --- Ejemplo test ---
 ir_code = [
     "cont = 5",
     'print "El valor de cont es:", cont',
@@ -129,5 +151,3 @@ ir_code = [
 
 gen = StackMachineCodeGenerator(ir_code)
 code_maquina = gen.generate()
-
-

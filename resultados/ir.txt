@@ -1,8 +1,14 @@
 cont = 5
 print "El valor de cont es:", cont
-t0 = 1
+t0 = 0
 if t0 goto L1
 goto L2
 L1:
 print "Cont es mayor a 3", 
 L2:
+t3 = 1
+if t3 goto L4
+goto L5
+L4:
+print "Cont no es igual a 3", 
+L5:

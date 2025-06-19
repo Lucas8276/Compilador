@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List, Tuple
 import itertools
 from lark import Lark, Transformer, Token
+from lark import Tree
 
 # ─────────────────────────  Cargar gramática  ──────────────────────────
 grammar_path = Path(__file__).with_name("che_rumba.lark")
@@ -27,6 +28,11 @@ class IRGenerator(Transformer):
 
     def new_temp(self):
         return f"t{next(self.tmp)}"
+
+    def import_stmt(self, items):
+        archivo = items[0][1:-1]  # quita comillas
+        return [f'# Labura "{archivo}"']
+
 
     def number(self, items):
         return [], items[0].value
@@ -47,6 +53,12 @@ class IRGenerator(Transformer):
         code_e, val = items[1]
         return code_e + [f"{name} = {val}"]
 
+    def reassign(self, items):
+        name = items[0].value if hasattr(items[0], 'value') else items[0]
+        code_e, val = items[1]
+        return code_e + [f"{name} = {val}"]
+
+
     def print_stmt(self, items):
         text = items[0][1:-1]  # quitar comillas
         args_code, args_vals = [], []
@@ -55,6 +67,15 @@ class IRGenerator(Transformer):
             args_code += c
             args_vals.append(v)
         return args_code + [f'print "{text}", ' + ", ".join(args_vals)]
+
+    def guita_read(self, items):
+        mensaje = items[0][1:-1]
+        t = self.new_temp()
+        code = [f'{t} = GUITA "{mensaje}"']
+        return code, t
+
+
+
 
     def if_stmt(self, items):
         cond_code, cond_val = items[0]
@@ -68,14 +89,42 @@ class IRGenerator(Transformer):
                 block_code +
                 [f"{Lend}:"])
 
+    def else_stmt(self, items):
+        block_code = items[0]
+        return block_code
+
+
+    def elif_stmt(self, items):
+        cond_code, cond_val = items[0]
+        block_code = items[1]
+        Ltrue = self.new_temp().replace("t", "L")
+        Lend = self.new_temp().replace("t", "L")
+        return (
+            cond_code +
+            [f"if {cond_val} goto {Ltrue}",
+            f"goto {Lend}",
+            f"{Ltrue}:"] +
+            block_code +
+            [f"{Lend}:"]
+        )
+
+
     def block(self, stmts):
         code = []
         for s in stmts:
             if isinstance(s, tuple) and len(s) == 2:
                 code += s[0]
-            else:
+            elif isinstance(s, list):
                 code += s
+            elif isinstance(s, str):
+                code.append(s)
+            elif isinstance(s, Tree):
+                # Puede loguear o ignorar, pero no sumar
+                print(f"[WARN] block(): se ignoró Tree inesperado: {s.data if hasattr(s, 'data') else s}")
+            else:
+                print(f"[WARN] block(): tipo no esperado {type(s)}: {s}")
         return code
+
 
     def program(self, children):
         code = []
@@ -103,20 +152,37 @@ class IRGenerator(Transformer):
             return code_e + [f"RETURN {val}"]
         else:
             return ["RETURN"]
-        
+
+    def for_stmt(self, items):
+        var = items[0].value if hasattr(items[0], 'value') else items[0]
+        times = items[1][1] if isinstance(items[1], tuple) else items[1]
+        block_code = items[2]
+        Lstart = self.new_temp().replace("t", "L")
+        Lcond = self.new_temp().replace("t", "L")
+        Lend  = self.new_temp().replace("t", "L")
+        t_iter = self.new_temp()
+        code = [
+            f"{t_iter} = 0",
+            f"{Lstart}:",
+            f"if {t_iter} >= {times} goto {Lend}",
+            f"{var} = {t_iter}",
+        ]
+        code += block_code
+        code += [
+            f"{t_iter} = {t_iter} + 1",
+            f"goto {Lstart}",
+            f"{Lend}:"
+        ]
+        return code
+
+
+
     def while_stmt(self, items):
         cond_code, cond_val = items[0]
         block_code = items[1]
         Lstart = self.new_temp().replace("t", "L")
-        Lend  = self.new_temp().replace("t", "L")
-        # IR:
-        # Lstart: cond_code
-        #         if cond_val goto Lbody
-        #         goto Lend
-        # Lbody:  block_code
-        #         goto Lstart
-        # Lend:
         Lbody = self.new_temp().replace("t", "L")
+        Lend  = self.new_temp().replace("t", "L")
         return (
             [f"{Lstart}:"] +
             cond_code +
@@ -127,6 +193,7 @@ class IRGenerator(Transformer):
             [f"goto {Lstart}",
             f"{Lend}:"]
         )
+
 
     
     def dowhile_stmt(self, items):
@@ -156,9 +223,14 @@ def flatten_and_str(code):
     for c in code:
         if isinstance(c, list) or isinstance(c, tuple):
             result.extend(flatten_and_str(c))
-        else:
+        elif isinstance(c, str):
             result.append(str(c))
+        elif isinstance(c, Tree):
+            print(f"[WARN] flatten_and_str(): Tree no esperado: {c.data if hasattr(c, 'data') else c}")
+        else:
+            print(f"[WARN] flatten_and_str(): tipo no esperado {type(c)}: {c}")
     return result
+
 
 def parse_and_generate_ir(source_code: str) -> list:
     tree = parser.parse(source_code)

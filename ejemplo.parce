@@ -1,20 +1,21 @@
-Che Programa de prueba total del Parce de ejemplo
 
-Labura extra.parce
+
+Labura "extra.parce"
 
 Parce n = 0
 Parce suma = 0
-Parce encontrado = Ni ahí
+Parce encontrado = Niahi
 
 Pilas("For del 0 al 4 (Boliche):")
+Parce n=Guita("ingresa el numero 0:")
 Boliche i in 5 {
     Pilas("Iteración de for, i:", i)
     suma = suma + i
-    Si i == 2 {
-        Pilas("Salta a la siguiente con Ándale (continue)")
-        Ándale
+    Pues (i == 2) {
+        Pilas("Salta a la siguiente con Andale (continue)")
+        Andale
     }
-    Si i == 4 {
+    Pues (i == 4) {
         Pilas("Rompemos el for con Paila (break)")
         Paila
     }
@@ -33,7 +34,7 @@ Parce y = 0
 Previa {
     Pilas("En do-while, y:", y)
     y = y + 1
-    Si y == 2 {
+    Pues y == 2 {
         Pilas("Return anticipado con Volve (no tiene efecto en main, pero prueba la sintaxis)")
         Volve y
     }
@@ -49,12 +50,12 @@ Pues suma > 5 {
 }
 
 Parce ok = Posta
-Parce fail = Ni ahí
+Parce fail = Niahi
 
-Pues ok == Posta {
+Pues (ok == Posta) {
     Pilas("ok es verdadero")
 }
-Pues fail == Ni ahí {
+Pues fail == Niahi {
     Pilas("fail es falso")
 }
 
