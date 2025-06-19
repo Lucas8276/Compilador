@@ -1,12 +1,9 @@
 from lark import Lark, Transformer, Token
 import itertools
-
 # ------------- cargar gramática y parser -------------
 with open("che_rumba.lark", encoding="utf-8") as f:
     grammar = f.read()
-
 parser = Lark(grammar, start="program", parser="lalr")
-
 # ------------- Transformer → IR -------------
 class IRGenerator(Transformer):
     def __init__(self):

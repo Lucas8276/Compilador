@@ -115,4 +115,4 @@ ir_code = [
 gen = StackMachineCodeGenerator(ir_code)
 code_maquina = gen.generate()
 
-print("\n".join(code_maquina))
+
