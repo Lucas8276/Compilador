@@ -1,3 +1,9 @@
+class BreakLoop(Exception): pass
+class ContinueLoop(Exception): pass
+class ReturnValue(Exception):
+    def __init__(self, value):
+        self.value = value
+
 class StackMachineSimulator:
     """
     Ejecuta el código generado por StackMachineCodeGenerator.
@@ -74,6 +80,19 @@ class StackMachineSimulator:
                     continue
                 case "LABEL":
                     pass  # ya fueron mapeadas
+
+                case "BREAK":
+                    # salta fuera del bucle actual (puede ser usando excepciones en Python)
+                    raise BreakLoop()
+
+                case "CONTINUE":
+                    raise ContinueLoop()
+
+                case "RETURN":
+                    # toma valor y lo retorna
+                    ret_val = self.stack.pop()
+                    raise ReturnValue(ret_val)
+
 
                 # --- salida ---
                 case "PRINT":

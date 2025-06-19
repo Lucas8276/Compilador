@@ -100,3 +100,25 @@ def parse_and_generate_ir(source_code: str) -> list:
     ir_code = gen.transform(tree)
     ir_code = flatten_and_str(ir_code)
     return ir_code
+
+def true(self, items):
+    return [], "1"
+
+def false(self, items):
+    return [], "0"
+
+def break_stmt(self, items):
+    return ["BREAK"]
+
+def continue_stmt(self, items):
+    return ["CONTINUE"]
+
+def return_stmt(self, items):
+    if items:
+        code_e, val = items[0]
+        return code_e + [f"RETURN {val}"]
+    else:
+        return ["RETURN"]
+
+
+

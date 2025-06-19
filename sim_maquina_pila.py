@@ -70,6 +70,21 @@ class StackMachineCodeGenerator:
                         self.output.append("PRINT")
                 continue
 
+            if line == "BREAK":
+                self.output.append("BREAK")
+                continue
+
+            if line == "CONTINUE":
+                self.output.append("CONTINUE")
+                continue
+
+            if line.startswith("RETURN "):
+                val = line.split(" ", 1)[1]
+                self.emit_load_operand(val)
+                self.output.append("RETURN")
+                continue
+
+
             # Por defecto, agregar la línea sin cambios (o ignorar)
             # self.output.append(f"# {line}")
 

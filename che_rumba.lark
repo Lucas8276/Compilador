@@ -48,6 +48,8 @@ break_stmt: "Paila"
 import_stmt: "Labura" STRING
 continue_stmt: "Ándale"
 return_stmt: "Volve" expr
+return_stmt: "Volve" [expr]
+
 
 
 block: "{" statement* "}"
