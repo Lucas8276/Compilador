@@ -1,0 +1,51 @@
+// che_rumba.lark  (versión 3 – comentarios ignorados)
+
+%import common.CNAME            -> IDENT
+%import common.NUMBER
+%import common.WS
+%import common.ESCAPED_STRING   -> STRING
+%ignore WS
+
+COMMENT: /Che[^\n]*/
+%ignore COMMENT                 // ← los comentarios ya no llegan al Transformer
+
+// ---------- TOKENS ----------
+OP: "+" | "-" | "*" | "/" | ">" | "<" | ">=" | "<=" | "==" | "!="
+
+// ---------- REGLAS ----------
+program: statement*
+
+?statement: var_decl
+          | func_def
+          | print_stmt
+          | read_stmt
+          | if_stmt
+          | elif_stmt
+          | else_stmt
+          | for_stmt
+          | while_stmt
+          | do_stmt
+          | dowhile_stmt
+          | break_stmt
+
+var_decl:   "Parce" IDENT "=" expr
+func_def:   "Quilombo" IDENT "(" ")" block
+print_stmt: "Pilas" "(" STRING ("," expr)* ")"
+read_stmt:  "Guita" "(" "pilas" "(" STRING ")" ")"
+if_stmt:    "Pues" "(" expr ")" block
+elif_stmt:  "Orale" "pues" "(" expr ")" block
+else_stmt:  "Orale" block
+for_stmt:   "Boliche" IDENT "in" NUMBER block
+while_stmt: "Rumba" expr block
+do_stmt:    "Pre" expr block
+dowhile_stmt: do_stmt "Rumba" expr block
+break_stmt: "Paila"
+
+block: "{" statement* "}"
+
+?expr: expr OP term   -> bin_expr
+     | term
+
+?term: NUMBER         -> number
+     | IDENT          -> var
+     | "(" expr ")"
