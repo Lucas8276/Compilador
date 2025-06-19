@@ -1,10 +1,26 @@
-from lark import Lark, Transformer, Token
+"""
+Generador de Representación Intermedia (IR) para Parce‑Lang
+----------------------------------------------------------
+• Usa Lark para parsear `che_rumba.lark`
+• Convierte el AST en código de 3‑direcciones (lista[str])
+• Retorna esa lista para que el optimizador la consuma
+"""
+
+from pathlib import Path
+from typing import List, Tuple
 import itertools
-# ------------- cargar gramática y parser -------------
-with open("che_rumba.lark", encoding="utf-8") as f:
-    grammar = f.read()
+from lark import Lark, Transformer, Token
+
+# ─────────────────────────  Cargar gramática  ──────────────────────────
+grammar_path = Path(__file__).with_name("che_rumba.lark")
+grammar = grammar_path.read_text(encoding="utf-8")
 parser = Lark(grammar, start="program", parser="lalr")
-# ------------- Transformer → IR -------------
+
+
+# ─────────────────────────  Transformer → IR  ──────────────────────────
+Code = List[str]
+Expr = Tuple[Code, str]          # (código acumulado, valor/temporal)
+
 class IRGenerator(Transformer):
     def __init__(self):
         self.tmp = itertools.count()
@@ -12,9 +28,8 @@ class IRGenerator(Transformer):
     def new_temp(self):
         return f"t{next(self.tmp)}"
 
-    # ── Expresiones ───────────────────────────────────
     def number(self, items):
-        return [], items[0].value            # (code, value)
+        return [], items[0].value
 
     def var(self, items):
         return [], items[0].value
@@ -27,14 +42,13 @@ class IRGenerator(Transformer):
         code = code_l + code_r + [f"{t} = {val_l} {op_tok.value} {val_r}"]
         return code, t
 
-    # ── Sentencias ───────────────────────────────────
     def var_decl(self, items):
-        name = items[0]
+        name = items[0].value if isinstance(items[0], Token) else items[0]
         code_e, val = items[1]
         return code_e + [f"{name} = {val}"]
 
     def print_stmt(self, items):
-        text = items[0][1:-1]                       # quitar comillas
+        text = items[0][1:-1]  # quitar comillas
         args_code, args_vals = [], []
         for e in items[1:]:
             c, v = e
@@ -54,29 +68,35 @@ class IRGenerator(Transformer):
                 block_code +
                 [f"{Lend}:"])
 
-    # ── Bloques / programa  ───────────────────────────
     def block(self, stmts):
-        code = []
-        for s in stmts:
-            if isinstance(s, tuple) and len(s) == 2:
-                code += s[0]          # s=(code,val)
-            else:
-                code += s             # s es lista
-        return code
-
-    def program(self, stmts):
         code = []
         for s in stmts:
             if isinstance(s, tuple) and len(s) == 2:
                 code += s[0]
             else:
                 code += s
-        self.ir_code = code           # lo guardo para usar fuera
         return code
 
-# ── Función auxiliar — la que usará main.py ──────────
-def parse_and_generate_ir(source_code: str):
+    def program(self, children):
+        code = []
+        for stmt in children:
+            if isinstance(stmt, list):
+                code.extend(stmt)
+            else:
+                code.append(stmt)
+        return code
+def flatten_and_str(code):
+    result = []
+    for c in code:
+        if isinstance(c, list) or isinstance(c, tuple):
+            result.extend(flatten_and_str(c))
+        else:
+            result.append(str(c))
+    return result
+
+def parse_and_generate_ir(source_code: str) -> list:
     tree = parser.parse(source_code)
     gen = IRGenerator()
-    gen.transform(tree)
-    return gen.ir_code
+    ir_code = gen.transform(tree)
+    ir_code = flatten_and_str(ir_code)
+    return ir_code

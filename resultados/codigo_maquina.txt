@@ -1,0 +1,13 @@
+PUSH 5
+STORE cont
+PRINT "El valor de cont es:"
+LOAD cont
+PRINT
+PUSH 1
+STORE t0
+LOAD t0
+JNZ L1
+JMP L2
+LABEL L1
+PRINT "Cont es mayor a 3"
+LABEL L2

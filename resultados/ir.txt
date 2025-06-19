@@ -1,0 +1,8 @@
+cont = 5
+print "El valor de cont es:", cont
+t0 = 1
+if t0 goto L1
+goto L2
+L1:
+print "Cont es mayor a 3", 
+L2:

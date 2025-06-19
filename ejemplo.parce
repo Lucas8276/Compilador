@@ -1,0 +1,8 @@
+Parce cont = 5
+Pilas("El valor de cont es:", cont)
+Pues (cont > 3) {
+    Pilas("Cont es mayor a 3")
+}
+Orale {
+    Pilas("Cont no es mayor a 3")
+}

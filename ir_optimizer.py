@@ -1,105 +1,106 @@
+"""
+Optimizador de IR
+-----------------
+• Propagación de constantes
+• Constant Folding
+• Eliminación de código muerto
+"""
+from __future__ import annotations
 import re
+from typing import List
 
 class IROptimizer:
-    """
-    – Propagación de constantes
-    – Constant folding con operadores aritméticos y relacionales
-    """
-    def __init__(self, code):
-        self.code = code              # lista de strings con IR
-        self.const = {}               # var -> valor numérico
+    def __init__(self, code: List[str]):
+        self.code = code          # instrucciones IR
+        self.const: dict[str, float] = {}
 
-    # — helpers —
-    def _is_num(self, s):
+    # -------- helpers ----------
+    @staticmethod
+    def _is_num(s: str) -> bool:
         try:
             float(s)
             return True
         except ValueError:
             return False
 
-    def _eval(self, a, op, b):
-        if op == '+':  return a + b
-        if op == '-':  return a - b
-        if op == '*':  return a * b
-        if op == '/':  return a / b if b != 0 else float("inf")
-        if op == '>':  return int(a >  b)
-        if op == '<':  return int(a <  b)
-        if op == '>=': return int(a >= b)
-        if op == '<=': return int(a <= b)
-        if op == '==': return int(a == b)
-        if op == '!=': return int(a != b)
-        return None
+    @staticmethod
+    def _eval(a: float, op: str, b: float) -> float:
+        return {
+            '+': a + b,  '-': a - b,  '*': a * b,
+            '/': a / b if b != 0 else float("inf"),
+            '>': int(a > b),  '<': int(a < b),
+            '>=': int(a >= b), '<=': int(a <= b),
+            '==': int(a == b), '!=': int(a != b)
+        }[op]
 
-    # — constante → reemplazo en expresiones sencillas —
+    # -------- propagación y folding ----------
     def _replace_consts(self, expr: str) -> str:
-        toks = expr.split()
-        return " ".join(str(self.const.get(t, t)) for t in toks)
+        return " ".join(str(self.const.get(tok, tok)) for tok in expr.split())
 
-    # — optimización principal —
-    def constant_propagation_and_folding(self):
-        new = []
+    def constant_propagation_and_folding(self) -> None:
+        new: List[str] = []
         assign_re = re.compile(r'^\s*(\w+)\s*=\s*(.+)$')
 
         for line in self.code:
             m = assign_re.match(line)
-            if not m:                         # línea que no es asignación
+            if not m:                 # no es asignación -> copiar
                 new.append(line)
                 continue
 
             var, expr = m.group(1), m.group(2).strip()
-            expr = self._replace_consts(expr) # sustituir var const → valor
+            expr = self._replace_consts(expr)
 
             toks = expr.split()
-            # caso 1: asignación de número literal
+            # asignación literal
             if len(toks) == 1 and self._is_num(toks[0]):
                 val = float(toks[0])
                 self.const[var] = val
                 new.append(f"{var} = {val:g}")
                 continue
 
-            # caso 2: expr binaria simple  a op b
+            # binaria a op b con números
             if len(toks) == 3 and self._is_num(toks[0]) and self._is_num(toks[2]):
                 val = self._eval(float(toks[0]), toks[1], float(toks[2]))
                 self.const[var] = val
                 new.append(f"{var} = {val:g}")
                 continue
 
-            # caso general: no es constante
-            self.const.pop(var, None)         # ya no es constante
+            # caso general
+            self.const.pop(var, None)
             new.append(f"{var} = {expr}")
 
         self.code = new
-    def dead_code_elimination(self):
-        useful_vars = set()
-        new_code = []
-        # Recorrer en orden inverso
+
+    # -------- dead‑code elimination ----------
+    def dead_code_elimination(self) -> None:
+        useful: set[str] = set()
+        new: List[str] = []
+
         for line in reversed(self.code):
             stripped = line.strip()
-            # Instrucciones que deben mantenerse siempre
-            if stripped.startswith("print") or stripped.startswith("goto") or ':' in stripped or stripped.startswith("if"):
-                new_code.insert(0, line)
-                # Agregar variables usadas en estas instrucciones
+
+            # Mantener líneas de control/salida
+            control = stripped.startswith(("print", "goto", "if")) or ':' in stripped
+            if control:
+                new.insert(0, line)
                 tokens = re.findall(r'\b\w+\b', line)
-                for t in tokens:
-                    if t.isidentifier() and t != 'goto' and not t.startswith('L'):
-                        useful_vars.add(t)
+                useful.update(t for t in tokens if t.isidentifier() and not t.startswith('L'))
                 continue
 
             m = re.match(r'(\w+)\s*=\s*(.+)', line)
             if m:
                 var, expr = m.group(1), m.group(2)
-                tokens = re.findall(r'\b\w+\b', expr)
-                # Si la variable se usa luego, conservar
-                if var in useful_vars:
-                    new_code.insert(0, line)
-                    for t in tokens:
-                        if t.isidentifier() and t != 'goto' and not t.startswith('L'):
-                            useful_vars.add(t)
-        self.code = new_code
+                if var in useful:
+                    new.insert(0, line)
+                    tokens = re.findall(r'\b\w+\b', expr)
+                    useful.update(t for t in tokens if t.isidentifier() and not t.startswith('L'))
 
-    # — interfaz pública —
-    def optimize(self):
+        self.code = new
+
+    # -------- interfaz pública ----------
+    def optimize(self) -> None:
         self.constant_propagation_and_folding()
         self.dead_code_elimination()
-    def get_code(self):
+
+    def get_code(self) -> List[str]:
         return self.code
