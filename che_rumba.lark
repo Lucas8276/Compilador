@@ -27,9 +27,14 @@ program: statement*
           | do_stmt
           | dowhile_stmt
           | break_stmt
+          | import_stmt
+          | continue_stmt
+          | return_stmt
+
 
 var_decl:   "Parce" IDENT "=" expr
-func_def:   "Quilombo" IDENT "(" ")" block
+func_def: "Quilombo" IDENT "(" [params] ")" block
+params: IDENT ("," IDENT)*
 print_stmt: "Pilas" "(" STRING ("," expr)* ")"
 read_stmt:  "Guita" "(" "pilas" "(" STRING ")" ")"
 if_stmt:    "Pues" "(" expr ")" block
@@ -40,12 +45,19 @@ while_stmt: "Rumba" expr block
 do_stmt:    "Pre" expr block
 dowhile_stmt: do_stmt "Rumba" expr block
 break_stmt: "Paila"
+import_stmt: "Labura" STRING
+continue_stmt: "Ándale"
+return_stmt: "Volve" expr
+
 
 block: "{" statement* "}"
 
 ?expr: expr OP term   -> bin_expr
      | term
+     
 
 ?term: NUMBER         -> number
      | IDENT          -> var
      | "(" expr ")"
+     | "Posta"        -> true
+     | "Ni ahí"       -> false

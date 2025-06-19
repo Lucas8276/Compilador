@@ -21,6 +21,13 @@ class CheRumbaInterpreter(Transformer):
         left, op_tok, right = items
         op = op_tok.value
         return self.eval_op(left, op, right)
+    
+    def true(self, _):
+        return True
+
+    def false(self, _):
+        return False
+
 
     # ---------- sentencias ----------
     def var_decl(self, items):
