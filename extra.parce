@@ -1,0 +1,4 @@
+Che Este archivo será importado
+
+Quilombo mostrarNumeros(numero)
+    Pilas("este es el numero", numero)

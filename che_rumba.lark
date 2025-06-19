@@ -42,13 +42,12 @@ elif_stmt:  "Orale" "pues" "(" expr ")" block
 else_stmt:  "Orale" block
 for_stmt:   "Boliche" IDENT "in" NUMBER block
 while_stmt: "Rumba" expr block
-do_stmt:    "Pre" expr block
-dowhile_stmt: do_stmt "Rumba" expr block
+dowhile_stmt: "Previa" block "Rumba" "(" expr ")"
 break_stmt: "Paila"
 import_stmt: "Labura" STRING
 continue_stmt: "Ándale"
 return_stmt: "Volve" expr
-return_stmt: "Volve" [expr]
+
 
 
 

@@ -85,6 +85,72 @@ class IRGenerator(Transformer):
             else:
                 code.append(stmt)
         return code
+    def true(self, items):
+        return [], "1"
+
+    def false(self, items):
+        return [], "0"
+
+    def break_stmt(self, items):
+        return ["BREAK"]
+
+    def continue_stmt(self, items):
+        return ["CONTINUE"]
+
+    def return_stmt(self, items):
+        if items:
+            code_e, val = items[0]
+            return code_e + [f"RETURN {val}"]
+        else:
+            return ["RETURN"]
+        
+    def while_stmt(self, items):
+        cond_code, cond_val = items[0]
+        block_code = items[1]
+        Lstart = self.new_temp().replace("t", "L")
+        Lend  = self.new_temp().replace("t", "L")
+        # IR:
+        # Lstart: cond_code
+        #         if cond_val goto Lbody
+        #         goto Lend
+        # Lbody:  block_code
+        #         goto Lstart
+        # Lend:
+        Lbody = self.new_temp().replace("t", "L")
+        return (
+            [f"{Lstart}:"] +
+            cond_code +
+            [f"if {cond_val} goto {Lbody}",
+            f"goto {Lend}",
+            f"{Lbody}:"] +
+            block_code +
+            [f"goto {Lstart}",
+            f"{Lend}:"]
+        )
+
+    
+    def dowhile_stmt(self, items):
+        block_code = items[0]              # el bloque { ... }
+        cond_code, cond_val = items[1]     # la condición tras Rumba (expr)
+        Lstart = self.new_temp().replace("t", "L")
+        Lcond = self.new_temp().replace("t", "L")
+        Lend = self.new_temp().replace("t", "L")
+        # IR:
+        # Lstart: block_code
+        # Lcond:  cond_code
+        #         if cond_val goto Lstart
+        #         goto Lend
+        # Lend:
+        return (
+            [f"{Lstart}:"] +
+            block_code +
+            [f"{Lcond}:"] +
+            cond_code +
+            [f"if {cond_val} goto {Lstart}",
+            f"{Lend}:"]
+        )
+
+    
 def flatten_and_str(code):
     result = []
     for c in code:
@@ -101,24 +167,6 @@ def parse_and_generate_ir(source_code: str) -> list:
     ir_code = flatten_and_str(ir_code)
     return ir_code
 
-def true(self, items):
-    return [], "1"
-
-def false(self, items):
-    return [], "0"
-
-def break_stmt(self, items):
-    return ["BREAK"]
-
-def continue_stmt(self, items):
-    return ["CONTINUE"]
-
-def return_stmt(self, items):
-    if items:
-        code_e, val = items[0]
-        return code_e + [f"RETURN {val}"]
-    else:
-        return ["RETURN"]
 
 
 

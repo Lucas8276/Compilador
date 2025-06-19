@@ -1,8 +1,60 @@
-Parce cont = 5
-Pilas("El valor de cont es:", cont)
-Pues (cont > 3) {
-    Pilas("Cont es mayor a 3")
+Che Programa de prueba total del Parce de ejemplo
+
+Labura extra.parce
+
+Parce n = 0
+Parce suma = 0
+Parce encontrado = Ni ahí
+
+Pilas("For del 0 al 4 (Boliche):")
+Boliche i in 5 {
+    Pilas("Iteración de for, i:", i)
+    suma = suma + i
+    Si i == 2 {
+        Pilas("Salta a la siguiente con Ándale (continue)")
+        Ándale
+    }
+    Si i == 4 {
+        Pilas("Rompemos el for con Paila (break)")
+        Paila
+    }
 }
-Orale {
-    Pilas("Cont no es mayor a 3")
+Pilas("Suma parcial:", suma)
+
+Pilas("While (Rumba):")
+Parce x = 1
+Rumba (x < 4) {
+    Pilas("x en while:", x)
+    x = x + 1
 }
+
+Pilas("Do-While clásico (Pre...Rumba):")
+Parce y = 0
+Previa {
+    Pilas("En do-while, y:", y)
+    y = y + 1
+    Si y == 2 {
+        Pilas("Return anticipado con Volve (no tiene efecto en main, pero prueba la sintaxis)")
+        Volve y
+    }
+} Rumba (y < 3)
+
+Pilas("If, Else If y Else:")
+Pues suma > 5 {
+    Pilas("La suma fue mayor que 5")
+} Orale pues(suma == 5) {
+    Pilas("La suma es exactamente 5")
+} Orale {
+    Pilas("La suma fue menor que 5")
+}
+
+Parce ok = Posta
+Parce fail = Ni ahí
+
+Pues ok == Posta {
+    Pilas("ok es verdadero")
+}
+Pues fail == Ni ahí {
+    Pilas("fail es falso")
+}
+
