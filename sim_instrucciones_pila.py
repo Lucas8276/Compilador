@@ -63,8 +63,10 @@ class StackMachineSimulator:
                         if mensaje.startswith('"') and mensaje.endswith('"'):
                             mensaje = mensaje[1:-1]
                         val = input(mensaje + " ")
+                        print()
                     else:
                         val = input("Ingrese un valor: ")
+                        print()
                     # Conversión automática:
                     try:
                         val = int(val)
@@ -117,13 +119,18 @@ class StackMachineSimulator:
 
                 # --- salida ---
                 case "PRINT":
-                    if len(parts) == 2:               # PRINT "texto"
-                        print(parts[1].strip('"'))
-                    else:                             # PRINT (valor pila)
+                    if len(parts) == 2:
+                        # PRINT "texto fijo"
+                        print(parts[1].strip('"'), end=" ")
+                        print()
+                    else:
+                        # PRINT valor de la pila
                         if self.stack:
-                            print(self.stack.pop())
+                            print(self.stack.pop(), end=" ")
+                            print()
                         else:
                             print("[WARN] PRINT intentó hacer pop en pila vacía")
+
 
                 # --- desconocido ---
                 case _:

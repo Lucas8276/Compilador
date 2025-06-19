@@ -1,21 +1,61 @@
-PUSH 5
-STORE cont
-PRINT "El valor de cont es:"
-LOAD cont
-PRINT
-PUSH 0
+GUITA "ingresa una palabra: "
 STORE t0
 LOAD t0
-JNZ L1
-JMP L2
-LABEL L1
-PRINT "Cont es mayor a 3"
-LABEL L2
-PUSH 1
+STORE palabra
+PRINT "la palabra es "
+LOAD palabra
+PRINT
+GUITA "Ingresa un número:"
+STORE t1
+LOAD t1
+STORE numero
+LOAD numero
+LOAD numero
+ADD
+STORE t2
+LOAD t2
+STORE doble
+PRINT "El doble de tu número es:"
+LOAD doble
+PRINT
+LOAD numero
+PUSH 10
+GT
 STORE t3
 LOAD t3
 JNZ L4
 JMP L5
 LABEL L4
-PRINT "Cont no es igual a 3"
+PRINT "Ingresaste un número mayor a 10"
 LABEL L5
+LOAD numero
+PUSH 10
+EQ
+STORE t6
+LOAD t6
+JNZ L7
+JMP L8
+LABEL L7
+PRINT "Ingresaste exactamente el 10"
+LABEL L8
+PRINT "Ingresaste un número menor a 10"
+PUSH 1
+STORE ok
+PUSH 0
+STORE fail
+PUSH 1
+STORE t9
+LOAD t9
+JNZ L10
+JMP L11
+LABEL L10
+PRINT "ok es verdadero"
+LABEL L11
+PUSH 1
+STORE t12
+LOAD t12
+JNZ L13
+JMP L14
+LABEL L13
+PRINT "fail es falso"
+LABEL L14

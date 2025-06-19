@@ -1,3 +1,10 @@
-El valor de cont es:
-5.0
-Cont no es igual a 3
+ingresa una palabra:  
+la palabra es  
+hola 
+Ingresa un número: 
+El doble de tu número es: 
+20 
+Ingresaste exactamente el 10 
+Ingresaste un número menor a 10 
+ok es verdadero 
+fail es falso

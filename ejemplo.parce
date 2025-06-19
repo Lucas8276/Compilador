@@ -2,51 +2,20 @@
 
 Labura "extra.parce"
 
-Parce n = 0
-Parce suma = 0
-Parce encontrado = Niahi
+Parce palabra= Guita("ingresa una palabra: ") 
+Pilas("la palabra es ", palabra)
+Parce numero = Guita("Ingresa un número:")
+Parce doble = numero + numero
+Pilas("El doble de tu número es:", doble)
 
-Pilas("For del 0 al 4 (Boliche):")
-Parce n=Guita("ingresa el numero 0:")
-Boliche i in 5 {
-    Pilas("Iteración de for, i:", i)
-    suma = suma + i
-    Pues (i == 2) {
-        Pilas("Salta a la siguiente con Andale (continue)")
-        Andale
-    }
-    Pues (i == 4) {
-        Pilas("Rompemos el for con Paila (break)")
-        Paila
-    }
-}
-Pilas("Suma parcial:", suma)
 
-Pilas("While (Rumba):")
-Parce x = 1
-Rumba (x < 4) {
-    Pilas("x en while:", x)
-    x = x + 1
-}
 
-Pilas("Do-While clásico (Pre...Rumba):")
-Parce y = 0
-Previa {
-    Pilas("En do-while, y:", y)
-    y = y + 1
-    Pues y == 2 {
-        Pilas("Return anticipado con Volve (no tiene efecto en main, pero prueba la sintaxis)")
-        Volve y
-    }
-} Rumba (y < 3)
-
-Pilas("If, Else If y Else:")
-Pues suma > 5 {
-    Pilas("La suma fue mayor que 5")
-} Orale pues(suma == 5) {
-    Pilas("La suma es exactamente 5")
+Pues (numero > 10) {
+    Pilas("Ingresaste un número mayor a 10")
+} Orale pues(numero == 10) {
+    Pilas("Ingresaste exactamente el 10")
 } Orale {
-    Pilas("La suma fue menor que 5")
+    Pilas("Ingresaste un número menor a 10")
 }
 
 Parce ok = Posta
@@ -55,7 +24,8 @@ Parce fail = Niahi
 Pues (ok == Posta) {
     Pilas("ok es verdadero")
 }
-Pues fail == Niahi {
+Pues (fail == Niahi) {
     Pilas("fail es falso")
 }
+
 
