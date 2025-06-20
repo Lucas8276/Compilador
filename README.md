@@ -1,10 +1,10 @@
-# ParceLang Compilador
+# Parce-Chamigo Compilador
 
-**ParceLang** es un compilador educativo que transforma código fuente escrito con palabras clave inspiradas en el español latinoamericano a una máquina de pila simulada. Es ideal para aprender los conceptos fundamentales de compilación y para divertirse creando programas con sabor local.
+**Parce-Chamigo** es un compilador educativo que transforma código fuente escrito con palabras clave inspiradas en el español latinoamericano a una máquina de pila simulada. Es ideal para aprender los conceptos fundamentales de compilación y para divertirse creando programas con sabor local.
 
 ---
 
-## **¿Qué puedes hacer con ParceLang?**
+## **¿Qué puedes hacer con Parce-Chamigo?**
 
 - **Definir variables** con la palabra clave `Parce`.
   - Ejemplo: `Parce x = 5`
