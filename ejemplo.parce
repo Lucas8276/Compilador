@@ -1,21 +1,17 @@
 
-
-Labura "extra.parce"
+Che gola
 
 Parce palabra= Guita("ingresa una palabra: ") 
-Pilas("la palabra es ", palabra)
 Parce numero = Guita("Ingresa un número:")
 Parce doble = numero + numero
+
+
 Pilas("El doble de tu número es:", doble)
-
-
 
 Pues (numero > 10) {
     Pilas("Ingresaste un número mayor a 10")
 } Orale pues(numero == 10) {
     Pilas("Ingresaste exactamente el 10")
-} Orale {
-    Pilas("Ingresaste un número menor a 10")
 }
 
 Parce ok = Posta

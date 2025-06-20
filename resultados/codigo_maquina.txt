@@ -1,10 +1,5 @@
 GUITA "ingresa una palabra: "
 STORE t0
-LOAD t0
-STORE palabra
-PRINT "la palabra es "
-LOAD palabra
-PRINT
 GUITA "Ingresa un número:"
 STORE t1
 LOAD t1
@@ -23,39 +18,37 @@ PUSH 10
 GT
 STORE t3
 LOAD t3
-JNZ L4
-JMP L5
-LABEL L4
-PRINT "Ingresaste un número mayor a 10"
-LABEL L5
+JNZ L6
 LOAD numero
 PUSH 10
 EQ
-STORE t6
-LOAD t6
+STORE t4
+LOAD t4
 JNZ L7
-JMP L8
+LABEL L6
+PRINT "Ingresaste un número mayor a 10"
+JMP L5
 LABEL L7
 PRINT "Ingresaste exactamente el 10"
-LABEL L8
-PRINT "Ingresaste un número menor a 10"
+JMP L5
+LABEL L5
 PUSH 1
 STORE ok
 PUSH 0
 STORE fail
 PUSH 1
-STORE t9
-LOAD t9
+STORE t8
+LOAD t8
 JNZ L10
-JMP L11
 LABEL L10
 PRINT "ok es verdadero"
-LABEL L11
+JMP L9
+LABEL L9
 PUSH 1
-STORE t12
-LOAD t12
+STORE t11
+LOAD t11
 JNZ L13
-JMP L14
 LABEL L13
 PRINT "fail es falso"
-LABEL L14
+JMP L12
+LABEL L12

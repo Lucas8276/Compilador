@@ -1,10 +1,9 @@
 ingresa una palabra:  
 la palabra es  
-hola 
+asdas 
 Ingresa un número: 
 El doble de tu número es: 
-20 
-Ingresaste exactamente el 10 
-Ingresaste un número menor a 10 
+10 
+Ingresaste un número mayor a 10 
 ok es verdadero 
 fail es falso

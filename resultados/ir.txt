@@ -1,35 +1,31 @@
 t0 = GUITA "ingresa una palabra: "
-palabra = t0
-print "la palabra es ", palabra
 t1 = GUITA "Ingresa un número:"
 numero = t1
 t2 = numero + numero
 doble = t2
 print "El doble de tu número es:", doble
 t3 = numero > 10
-if t3 goto L4
-goto L5
-L4:
+if t3 goto L6
+t4 = numero == 10
+if t4 goto L7
+L6:
 print "Ingresaste un número mayor a 10", 
-L5:
-t6 = numero == 10
-if t6 goto L7
-goto L8
+goto L5
 L7:
 print "Ingresaste exactamente el 10", 
-L8:
-print "Ingresaste un número menor a 10", 
+goto L5
+L5:
 ok = 1
 fail = 0
-t9 = 1
-if t9 goto L10
-goto L11
+t8 = 1
+if t8 goto L10
 L10:
 print "ok es verdadero", 
-L11:
-t12 = 1
-if t12 goto L13
-goto L14
+goto L9
+L9:
+t11 = 1
+if t11 goto L13
 L13:
 print "fail es falso", 
-L14:
+goto L12
+L12:

@@ -80,34 +80,50 @@ class IRGenerator(Transformer):
     def if_stmt(self, items):
         cond_code, cond_val = items[0]
         block_code = items[1]
-        Ltrue = self.new_temp().replace("t", "L")
-        Lend  = self.new_temp().replace("t", "L")
-        return (cond_code +
-                [f"if {cond_val} goto {Ltrue}",
-                 f"goto {Lend}",
-                 f"{Ltrue}:"] +
-                block_code +
-                [f"{Lend}:"])
+        return (cond_code, cond_val, block_code)
+
+    def elif_stmt(self, items):
+        cond_code, cond_val = items[0]
+        block_code = items[1]
+        return (cond_code, cond_val, block_code)
 
     def else_stmt(self, items):
         block_code = items[0]
         return block_code
 
 
-    def elif_stmt(self, items):
-        cond_code, cond_val = items[0]
-        block_code = items[1]
-        Ltrue = self.new_temp().replace("t", "L")
+    def if_chain(self, items):
+        # items: [if_stmt, elif_stmt, ..., else_stmt?]
         Lend = self.new_temp().replace("t", "L")
-        return (
-            cond_code +
-            [f"if {cond_val} goto {Ltrue}",
-            f"goto {Lend}",
-            f"{Ltrue}:"] +
-            block_code +
-            [f"{Lend}:"]
-        )
+        code = []
+        jump_labels = []
+        for branch in items:
+            if hasattr(branch, "__len__") and len(branch) == 3:
+                # if o elif: (cond_code, cond_val, block_code)
+                cond_code, cond_val, block_code = branch
+                Lbranch = self.new_temp().replace("t", "L")
+                code += cond_code
+                code += [f"if {cond_val} goto {Lbranch}"]
+                # Si la condición no se cumple, sigue al próximo branch
+                jump_labels.append(Lbranch)
+                continue
+            # else: solo bloque de código
+            else_block = branch
+            Lelse = self.new_temp().replace("t", "L")
+            jump_labels.append(Lelse)
+            code += [f"goto {Lelse}"]
 
+        # Ahora pega los bloques reales
+        for branch, Lbranch in zip(items, jump_labels):
+            if hasattr(branch, "__len__") and len(branch) == 3:
+                # if o elif
+                _, _, block_code = branch
+                code += [f"{Lbranch}:"] + block_code + [f"goto {Lend}"]
+            else:
+                # else
+                code += [f"{Lbranch}:"] + branch
+        code += [f"{Lend}:"]
+        return code
 
     def block(self, stmts):
         code = []
@@ -230,6 +246,14 @@ def flatten_and_str(code):
         else:
             print(f"[WARN] flatten_and_str(): tipo no esperado {type(c)}: {c}")
     return result
+
+
+def parse_and_generate_ir(source_code: str) -> list:
+    tree = parser.parse(source_code)
+    gen = IRGenerator()
+    ir_code = gen.transform(tree)
+    ir_code = flatten_and_str(ir_code)
+    return ir_code
 
 
 def parse_and_generate_ir(source_code: str) -> list:

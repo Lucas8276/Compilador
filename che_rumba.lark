@@ -18,9 +18,6 @@ program: statement*
 ?statement: var_decl
           | func_def
           | print_stmt
-          | if_stmt
-          | elif_stmt
-          | else_stmt
           | for_stmt
           | while_stmt
           | dowhile_stmt
@@ -29,6 +26,7 @@ program: statement*
           | continue_stmt
           | return_stmt
           | reassign
+          | if_chain 
 
 
 var_decl:   "Parce" IDENT "=" expr
@@ -40,6 +38,7 @@ if_stmt: "Pues" "(" expr ")" block
 else_stmt:  "Orale" block
 elif_stmt: "Orale" "pues" "(" expr ")" block
          | "Orale" "pues" expr block
+if_chain: if_stmt elif_stmt* else_stmt?
 for_stmt:   "Boliche" IDENT "in" NUMBER block
 while_stmt: "Rumba" expr block
 dowhile_stmt: "Previa" block "Rumba" "(" expr ")"
