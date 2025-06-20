@@ -1,3 +1,9 @@
-El valor de cont es:
-5.0
-Cont es mayor a 3
+ingresa una palabra:  
+la palabra es  
+asdas 
+Ingresa un número: 
+El doble de tu número es: 
+10 
+Ingresaste un número mayor a 10 
+ok es verdadero 
+fail es falso
