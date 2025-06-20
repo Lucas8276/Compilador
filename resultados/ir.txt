@@ -8,24 +8,27 @@ t3 = numero > 10
 if t3 goto L6
 t4 = numero == 10
 if t4 goto L7
+goto L8
 L6:
 print "Ingresaste un número mayor a 10", 
 goto L5
 L7:
 print "Ingresaste exactamente el 10", 
 goto L5
+L8:
+print "Ingresaste un número menor a 10", 
 L5:
 ok = 1
 fail = 0
-t8 = 1
-if t8 goto L10
-L10:
+t9 = 1
+if t9 goto L11
+L11:
 print "ok es verdadero", 
-goto L9
-L9:
-t11 = 1
-if t11 goto L13
-L13:
+goto L10
+L10:
+t12 = 1
+if t12 goto L14
+L14:
 print "fail es falso", 
-goto L12
-L12:
+goto L13
+L13:

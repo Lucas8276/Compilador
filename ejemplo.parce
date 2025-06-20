@@ -1,6 +1,3 @@
-
-Che gola
-
 Parce palabra= Guita("ingresa una palabra: ") 
 Parce numero = Guita("Ingresa un número:")
 Parce doble = numero + numero
@@ -12,6 +9,8 @@ Pues (numero > 10) {
     Pilas("Ingresaste un número mayor a 10")
 } Orale pues(numero == 10) {
     Pilas("Ingresaste exactamente el 10")
+}Orale {
+    Pilas("Ingresaste un número menor a 10")
 }
 
 Parce ok = Posta
@@ -23,5 +22,3 @@ Pues (ok == Posta) {
 Pues (fail == Niahi) {
     Pilas("fail es falso")
 }
-
-
